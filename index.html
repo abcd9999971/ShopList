@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>商品列表</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .controls {
+            margin: 20px 0;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        select {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1em;
+            margin-left: 10px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            transition: transform 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .stall-number {
+            color: #6c5ce7;
+            font-weight: 500;
+            margin-bottom: 10px;
+            display: inline-block;
+            padding: 4px 8px;
+            background: #f0f0ff;
+            border-radius: 5px;
+        }
+
+        h2 {
+            color: #2d3436;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        h3 {
+            color: #2d3436;
+            margin: 10px 0;
+            font-size: 1.1em;
+            line-height: 1.4;
+        }
+
+        .price {
+            color: #e17055;
+            font-size: 1.4em;
+            font-weight: 700;
+            margin: 15px 0;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: #6c5ce7;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #5f50e1;
+        }
+
+        .cart {
+            margin-top: 40px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .totals {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 5px;
+        }
+
+        .totals p {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+
+        .remove-btn {
+            background: #ff7675;
+            padding: 5px 10px;
+            margin-left: 10px;
+        }
+
+        .remove-btn:hover {
+            background: #e66767;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="controls">
+            <label>選擇攤位：</label>
+            <select id="stallFilter" onchange="filterProducts()">
+                <option value="">全部攤位</option>
+            </select>
+        </div>
+
+        <h2>商品列表</h2>
+        <div id="product-list" class="product-grid"></div>
+
+        <div class="cart">
+            <h2>購買清單</h2>
+            <div id="cart-items"></div>
+            <div class="totals">
+                <p>已購買總額: <span>¥<span id="purchased-total">0</span></span></p>
+                <p>未購買總額: <span>¥<span id="unpurchased-total">0</span></span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const products = [
+            { id: 1, stallNumber: 'カ20', name: '円香本', price: 500 },
+            { id: 2, stallNumber: 'カ20', name: 'まどとおコピ本', price: 100 },
+            { id: 3, stallNumber: 'カ06', name: '相合学舎合本', price: 800 },
+            { id: 4, stallNumber: 'カ14', name: 'まどひな短編集MHS', price: 500 },
+            { id: 5, stallNumber: 'カ14', name: 'まどひな本「円香先輩雛菜のこと好きすぎ～」', price: 500 },
+            { id: 6, stallNumber: 'オ09', name: '委託既刊 透P本 透ちゃんは何か見つけたようです', price: 500 },
+            { id: 7, stallNumber: 'カ05', name: 'まどひな本', price: 500 },
+            { id: 8, stallNumber: 'カ01', name: '透鴿合本', price: 1000 },
+            { id: 9, stallNumber: 'カ01', name: '透鴿立牌', price: 1500 },
+            { id: 10, stallNumber: 'ウ44', name: 'あさひ貼紙', price: 300 },
+            { id: 11, stallNumber: 'カ45', name: 'ノクチル立牌', price: 500 },
+            { id: 12, stallNumber: 'イ33', name: '小糸甜花あさひ貼紙', price: 100 },
+            { id: 13, stallNumber: 'カ34', name: 'こいひな秋デートアクスタ', price: 1000 },
+            { id: 14, stallNumber: 'オ39', name: '真乃、甘奈、透本', price: 500 },
+            { id: 15, stallNumber: 'オ39', name: '透既刊', price: 500 }
+        ];
+        
+        const cart = [];
+        const stallNumbers = new Set(products.map(p => p.stallNumber));
+
+        function updateStallFilter() {
+            const select = document.getElementById('stallFilter');
+            stallNumbers.forEach(stallNumber => {
+                const option = document.createElement('option');
+                option.value = stallNumber;
+                option.textContent = `攤位 ${stallNumber}`;
+                select.appendChild(option);
+            });
+        }
+
+        function filterProducts() {
+            const selectedStall = document.getElementById('stallFilter').value;
+            const filteredProducts = selectedStall 
+                ? products.filter(p => p.stallNumber === selectedStall)
+                : products;
+            renderProducts(filteredProducts);
+        }
+
+        function renderProducts(productsToRender = products) {
+            const productList = document.getElementById('product-list');
+            productList.innerHTML = '';
+            
+            productsToRender.forEach(product => {
+                const div = document.createElement('div');
+                div.className = 'product-card';
+                div.innerHTML = `
+                    <div class="stall-number">攤位 ${product.stallNumber}</div>
+                    <h3>${product.name}</h3>
+                    <p class="price">¥${product.price}</p>
+                    <button onclick="addToCart(${product.id}, '${product.stallNumber}', 
+                        '${product.name.replace("'", "\\'")}', ${product.price})">
+                        加入清單
+                    </button>
+                `;
+                productList.appendChild(div);
+            });
+        }
+
+        function addToCart(id, stallNumber, name, price) {
+            cart.push({ id, stallNumber, name, price, purchased: false });
+            renderCart();
+        }
+
+        function togglePurchased(index) {
+            cart[index].purchased = !cart[index].purchased;
+            renderCart();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            renderCart();
+        }
+
+        function renderCart() {
+            const cartItems = document.getElementById('cart-items');
+            cartItems.innerHTML = '';
+            
+            let purchasedTotal = 0;
+            let unpurchasedTotal = 0;
+
+            cart.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'cart-item';
+                div.innerHTML = `
+                    <div style="display: flex; align-items: center;">
+                        <input type="checkbox" 
+                            ${item.purchased ? 'checked' : ''} 
+                            onchange="togglePurchased(${index})">
+                        <span>
+                            <strong>${item.stallNumber}</strong> - ${item.name} - 
+                            <span class="price">¥${item.price}</span>
+                        </span>
+                    </div>
+                    <button class="remove-btn" onclick="removeFromCart(${index})">移除</button>
+                `;
+                cartItems.appendChild(div);
+
+                if (item.purchased) {
+                    purchasedTotal += item.price;
+                } else {
+                    unpurchasedTotal += item.price;
+                }
+            });
+
+            document.getElementById('purchased-total').textContent = purchasedTotal;
+            document.getElementById('unpurchased-total').textContent = unpurchasedTotal;
+        }
+
+        updateStallFilter();
+        renderProducts();
+    </script>
+</body>
+</html>
