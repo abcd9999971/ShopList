@@ -6,7 +6,7 @@ const cart = [];
 async function loadProductsFromTSV() {
     try {
         console.log('開始載入TSV文件...'); // 調試日誌
-        const response = await fetch('ssf08.tsv');
+        const response = await fetch('ssf08 - 1.tsv');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -62,6 +62,7 @@ function updateFilters() {
     const types = new Set(products.map(p => p.type));
     const characters = new Set(products.map(p => p.character));
 
+    /*
     // 更新攤位篩選器
     const stallFilter = document.getElementById('stallFilter');
     stallFilter.innerHTML = '<option value="">全部攤位</option>';
@@ -71,6 +72,7 @@ function updateFilters() {
         option.textContent = `攤位 ${stall}`;
         stallFilter.appendChild(option);
     });
+*/
 
     // 更新類型篩選器
     const typeFilter = document.getElementById('typeFilter');
@@ -102,21 +104,19 @@ function updateFilters() {
 }
 
 // 篩選商品
+// 修改 filterProducts 函數
 function filterProducts() {
-    const selectedStall = document.getElementById('stallFilter').value;
     const selectedType = document.getElementById('typeFilter').value;
     const selectedCharacter = document.getElementById('characterFilter').value;
     const selectedRecommended = document.getElementById('recommendedFilter').value;
 
     const filteredProducts = products.filter(product => {
-        const stallMatch = !selectedStall || product.stallNumber === selectedStall;
         const typeMatch = !selectedType || product.type === selectedType;
         const characterMatch = !selectedCharacter || product.character === selectedCharacter;
-        // 修正推薦篩選邏輯
         const recommendedMatch = !selectedRecommended || 
             (selectedRecommended === 'true' ? product.recommended === true : product.recommended === false);
         
-        return stallMatch && typeMatch && characterMatch && recommendedMatch;
+        return typeMatch && characterMatch && recommendedMatch;
     });
 
     renderProducts(filteredProducts);
@@ -231,5 +231,62 @@ function renderCart() {
     document.getElementById('purchased-total').textContent = purchasedTotal;
     document.getElementById('unpurchased-total').textContent = unpurchasedTotal;
 }
+
+// 在 script.js 中添加新函數
+function addAllRecommendedToCart() {
+    // 過濾出所有推薦商品
+    const recommendedProducts = products.filter(product => product.recommended);
+    
+    // 檢查是否有推薦商品
+    if (recommendedProducts.length === 0) {
+        alert('目前沒有推薦商品！');
+        return;
+    }
+    
+    // 將每個推薦商品添加到購物車
+    recommendedProducts.forEach(product => {
+        // 檢查商品是否已在購物車中
+        const isInCart = cart.some(item => item.id === product.id);
+        if (!isInCart) {
+            cart.push({
+                id: product.id,
+                stallNumber: product.stallNumber,
+                name: product.name,
+                price: product.price,
+                purchased: false,
+                pic: product.pic
+            });
+        }
+    });
+    
+    // 更新購物車顯示
+    renderCart();
+}
+// 確保頁面載入時添加按鈕
+document.addEventListener('DOMContentLoaded', function() {
+    loadProductsFromTSV();
+    
+    // 找到控制區域
+    const controls = document.querySelector('.controls');
+    
+    // 創建新的過濾器組
+    const filterGroup = document.createElement('div');
+    filterGroup.className = 'filter-group';
+    
+    // 創建添加所有推薦按鈕
+    const addAllButton = document.createElement('button');
+    addAllButton.textContent = '刺寶快樂鍵';
+    addAllButton.onclick = addAllRecommendedToCart;
+    addAllButton.style.width = 'auto';  // 覆蓋原來的 100% 寬度
+    addAllButton.style.padding = '8px 16px';  // 調整按鈕內邊距
+    addAllButton.style.fontSize = '1em';  // 調整字體大小
+    
+    // 將按鈕添加到過濾器組
+    filterGroup.appendChild(addAllButton);
+    
+    // 將過濾器組添加到控制區域
+    controls.appendChild(filterGroup);
+});
+
 // 頁面載入時初始化
 document.addEventListener('DOMContentLoaded', loadProductsFromTSV);
