@@ -165,7 +165,16 @@ function renderProducts(productsToRender = products) {
 
 // 添加到購物車
 function addToCart(id, stallNumber, type, character, name, price) {
-    cart.push({ id, stallNumber, type, character, name, price, purchased: false });
+    // 從products數組中找到對應的商品以獲取圖片URL
+    const product = products.find(p => p.id === id);
+    cart.push({ 
+        id, 
+        stallNumber, 
+        name, 
+        price, 
+        purchased: false,
+        pic: product.pic // 添加圖片URL
+    });
     renderCart();
 }
 
@@ -197,15 +206,18 @@ function renderCart() {
                 <input type="checkbox" 
                     ${item.purchased ? 'checked' : ''} 
                     onchange="togglePurchased(${index})">
-                <span>
-                    <strong>${item.stallNumber}</strong>
-                    <span class="type-tag type-${item.type}">${item.type}</span>
-                    <span class="character-tag">${item.character}</span>
-                    ${item.name} - 
-                    <span class="price">¥${item.price}</span>
-                </span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <img src="${item.pic}" class="cart-item-image" alt="${item.name}">
+                    <span>
+                        <strong class="stall-number">${item.stallNumber}</strong>
+                        ${item.name}
+                    </span>
+                </div>
             </div>
-            <button class="remove-btn" onclick="removeFromCart(${index})">移除</button>
+            <div style="display: flex; align-items: center;">
+                <span class="price">¥${item.price}</span>
+                <button class="remove-btn" onclick="removeFromCart(${index})">移除</button>
+            </div>
         `;
         cartItems.appendChild(div);
 
@@ -219,6 +231,5 @@ function renderCart() {
     document.getElementById('purchased-total').textContent = purchasedTotal;
     document.getElementById('unpurchased-total').textContent = unpurchasedTotal;
 }
-
 // 頁面載入時初始化
 document.addEventListener('DOMContentLoaded', loadProductsFromTSV);

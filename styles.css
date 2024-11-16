@@ -42,13 +42,15 @@ select {
     font-size: 1em;
 }
 
-/* 商品網格和卡片 */
+/* 商品網格和卡片的響應式設計 */
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
     margin-top: 20px;
+    /* 固定三列布局 */
+    grid-template-columns: repeat(3, 1fr);
 }
+
 
 .product-card {
     background: white;
@@ -206,26 +208,35 @@ button:hover {
 }
 
 .cart-item .type-tag,
-.cart-item .character-tag {
+.cart-item .recommended-tag {
     font-size: 0.8em;
     margin: 0 4px;
 }
 
 
 
-
+/* 購物車中的圖片樣式 */
 .cart-item-image {
     width: 50px;
     height: 50px;
     border-radius: 4px;
-    overflow: hidden;
+    object-fit: cover;
     margin-right: 10px;
 }
 
-.cart-item-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.cart-item .price {
+    margin-right: 20px;
+    color: #e17055;
+    font-weight: 700;
+}
+
+.cart-item .stall-number {
+    background: #f0f0ff;
+    padding: 4px 8px;
+    border-radius: 5px;
+    color: #6c5ce7;
+    margin-right: 8px;
+    font-size: 0.9em;
 }
 
 /* 總計區域樣式 */
@@ -258,7 +269,73 @@ button:hover {
 
 /* 表單元素 */
 input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
+    width: 40px;  /* 增加寬度 */
+    height: 40px; /* 增加高度 */
     margin-right: 10px;
+}
+
+/* 媒體查詢：手機螢幕 */
+@media screen and (max-width: 768px) {
+    .product-grid {
+        /* 調整手機版的網格配置 */
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+    }
+
+    .product-card {
+        padding: 10px; /* 減少卡片內邊距 */
+    }
+
+    .product-card h3 {
+        font-size: 0.9em; /* 減小標題字體 */
+        margin: 5px 0;
+    }
+
+    .price {
+        font-size: 1.1em; /* 調整價格字體 */
+        margin: 8px 0;
+    }
+
+    .stall-number {
+        font-size: 0.8em; /* 調整攤位號字體 */
+        padding: 2px 4px;
+        margin-bottom: 5px;
+    }
+
+    .type-tag, .character-tag, .recommended-tag {
+        font-size: 0.75em; /* 調整標籤字體 */
+        padding: 2px 4px;
+        margin: 2px;
+    }
+
+    button {
+        padding: 8px; /* 調整按鈕大小 */
+        font-size: 0.9em;
+    }
+
+    /* 購物車樣式調整 */
+    .cart-item {
+        padding: 10px;
+        font-size: 0.9em;
+    }
+
+    .remove-btn {
+        padding: 5px 10px;
+        font-size: 0.8em;
+    }
+
+    /* 控制區域調整 */
+    .controls {
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .filter-group {
+        font-size: 0.9em;
+    }
+
+    select {
+        padding: 5px 8px;
+        font-size: 0.9em;
+    }
 }
