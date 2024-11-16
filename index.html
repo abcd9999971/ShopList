@@ -1,60 +1,58 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>商品列表</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop List</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- 主容器區域 -->
     <div class="container">
-        <!-- 篩選控制區域 -->
         <div class="controls">
-            <!-- 攤位篩選器群組 -->
             <div class="filter-group">
-                攤位： 全部攤位
+                攤位：
+                <select id="stallFilter" onchange="filterProducts()">
+                    <option value="">全部攤位</option>
+                </select>
             </div>
 
-            <!-- 商品類型篩選器群組 -->
             <div class="filter-group">
-                類型： 全部類型
+                類型：
+                <select id="typeFilter" onchange="filterProducts()">
+                    <option value="">全部類型</option>
+                </select>
             </div>
 
-            <!-- 角色/CP篩選器群組 -->
             <div class="filter-group">
-                角色/CP： 全部角色/CP
+                角色/CP：
+                <select id="characterFilter" onchange="filterProducts()">
+                    <option value="">全部角色/CP</option>
+                </select>
             </div>
-        <!-- 推薦商品篩選器群組 -->
-        <div class="filter-group">
-            刺包優選：全部
+
+            <div class="filter-group">
+                刺包優選：
+                <select id="recommendedFilter" onchange="filterProducts()">
+                    <option value="">全部</option>
+                    <option value="true">刺包優選</option>
+                    <option value="false">其餘</option>
+                </select>
+            </div>
         </div>
-        </div>
 
-        <!-- 商品列表區域 -->
         <h2>商品列表</h2>
-        <!-- 商品網格容器，用於動態載入商品卡片 -->
-        <div id="product-list" class="product-grid">
-        </div>
+        <div id="product-list" class="product-grid"></div>
 
-        <!-- 購物車區域 -->
         <div class="cart">
             <h2>購買清單</h2>
-            
-            <!-- 購物車項目容器，用於動態載入購物車內容 -->
-            <div id="cart-items">
-            </div>
-
-            <!-- 總計金額顯示區域 -->
+            <div id="cart-items"></div>
             <div class="totals">
-                <!-- 已購買商品總額 -->
                 已購買總額: ¥<span id="purchased-total">0</span>
-                
-                <!-- 未購買商品總額 -->
                 未購買總額: ¥<span id="unpurchased-total">0</span>
             </div>
         </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>

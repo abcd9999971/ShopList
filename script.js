@@ -5,34 +5,53 @@ const cart = [];
 // 從本地TSV檔案讀取資料
 async function loadProductsFromTSV() {
     try {
+        console.log('開始載入TSV文件...'); // 調試日誌
         const response = await fetch('ssf08.tsv');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const text = await response.text();
+        console.log('成功獲取TSV文件內容:', text.substring(0, 200) + '...'); // 顯示前200字符
+
         const lines = text.split('\n');
-        
+        console.log('總行數:', lines.length); // 調試日誌
+
         // 跳過標題行，處理資料行
         products = lines.slice(1)
-            .filter(line => line.trim()) // 過濾空行
+            .filter(line => {
+                const trimmed = line.trim();
+                if (!trimmed) {
+                    console.log('過濾掉空行');
+                    return false;
+                }
+                return true;
+            })
             .map((line, index) => {
-                // 根據新的TSV格式調整欄位映射
+                console.log('處理行:', line); // 調試日誌
                 const [stallNumber, type, character, name, price, pic, recommended] = line.split('\t');
-                return {
+                const product = {
                     id: index + 1,
-                    stallNumber: stallNumber.trim(), // 攤位號
-                    type: type.trim(),      // 情況
-                    character: character.trim(), // 角色/CP
-                    name: name.trim(),      // 內容
+                    stallNumber: stallNumber.trim(),
+                    type: type.trim(),
+                    character: character.trim(),
+                    name: name.trim(),
                     price: parseInt(price.trim(), 10),
                     pic: pic.trim(),
-                    recommended: recommended?.trim().toUpperCase() === 'TRUE' // 刺寶優選
+                    recommended: recommended?.trim().toUpperCase() === 'TRUE'
                 };
+                console.log('創建產品對象:', product); // 調試日誌
+                return product;
             });
+
+        console.log('處理後的商品數量:', products.length); // 調試日誌
+        console.log('商品數據示例:', products[0]); // 調試日誌
 
         // 更新網頁顯示
         updateFilters();
         renderProducts();
     } catch (error) {
-        console.error('Error loading TSV file:', error);
-        console.error('Error details:', error.message);
+        console.error('載入TSV文件時發生錯誤:', error);
+        console.error('錯誤詳情:', error.message);
     }
 }
 
@@ -93,9 +112,9 @@ function filterProducts() {
         const stallMatch = !selectedStall || product.stallNumber === selectedStall;
         const typeMatch = !selectedType || product.type === selectedType;
         const characterMatch = !selectedCharacter || product.character === selectedCharacter;
-        // 處理推薦篩選
+        // 修正推薦篩選邏輯
         const recommendedMatch = !selectedRecommended || 
-            (selectedRecommended === 'TRUE' ? product.recommended : !product.recommended);
+            (selectedRecommended === 'true' ? product.recommended === true : product.recommended === false);
         
         return stallMatch && typeMatch && characterMatch && recommendedMatch;
     });
@@ -105,10 +124,20 @@ function filterProducts() {
 
 // 渲染商品列表
 function renderProducts(productsToRender = products) {
+    console.log('開始渲染商品列表'); // 調試日誌
+    console.log('要渲染的商品數量:', productsToRender.length); // 調試日誌
+
     const productList = document.getElementById('product-list');
+    if (!productList) {
+        console.error('找不到product-list元素!');
+        return;
+    }
+
     productList.innerHTML = '';
     
-    productsToRender.forEach(product => {
+    productsToRender.forEach((product, index) => {
+        console.log(`渲染第 ${index + 1} 個商品:`, product); // 調試日誌
+
         const div = document.createElement('div');
         div.className = `product-card ${product.recommended ? 'recommended' : ''}`;
         div.innerHTML = `
@@ -128,7 +157,10 @@ function renderProducts(productsToRender = products) {
             </button>
         `;
         productList.appendChild(div);
+        console.log(`商品 ${index + 1} 渲染完成`); // 調試日誌
     });
+
+    console.log('商品列表渲染完成'); // 調試日誌
 }
 
 // 添加到購物車
