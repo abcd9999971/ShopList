@@ -273,3 +273,70 @@ input[type="checkbox"] {
     height: 40px; /* 增加高度 */
     margin-right: 10px;
 }
+
+
+/* 媒體查詢：手機螢幕 */
+@media screen and (max-width: 768px) {
+    .product-grid {
+        /* 調整手機版的網格配置 */
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+    }
+
+    .product-card {
+        padding: 10px; /* 減少卡片內邊距 */
+    }
+
+    .product-card h3 {
+        font-size: 0.9em; /* 減小標題字體 */
+        margin: 5px 0;
+    }
+
+    .price {
+        font-size: 1.1em; /* 調整價格字體 */
+        margin: 8px 0;
+    }
+
+    .stall-number {
+        font-size: 0.8em; /* 調整攤位號字體 */
+        padding: 2px 4px;
+        margin-bottom: 5px;
+    }
+
+    .type-tag, .character-tag, .recommended-tag {
+        font-size: 0.75em; /* 調整標籤字體 */
+        padding: 2px 4px;
+        margin: 2px;
+    }
+
+    button {
+        padding: 8px; /* 調整按鈕大小 */
+        font-size: 0.9em;
+    }
+
+    /* 購物車樣式調整 */
+    .cart-item {
+        padding: 10px;
+        font-size: 0.9em;
+    }
+
+    .remove-btn {
+        padding: 5px 10px;
+        font-size: 0.8em;
+    }
+
+    /* 控制區域調整 */
+    .controls {
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .filter-group {
+        font-size: 0.9em;
+    }
+
+    select {
+        padding: 5px 8px;
+        font-size: 0.9em;
+    }
+}
