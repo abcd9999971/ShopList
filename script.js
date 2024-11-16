@@ -96,7 +96,7 @@ function updateFilters() {
     const recommendedFilter = document.getElementById('recommendedFilter');
     recommendedFilter.innerHTML = `
         <option value="">全部</option>
-        <option value="true">刺包優選</option>
+        <option value="true">刺寶優選</option>
         <option value="false">其餘</option>
     `;
 }
@@ -145,7 +145,7 @@ function renderProducts(productsToRender = products) {
             <div>
                 <span class="stall-number">${product.stallNumber}</span>
                 <span class="type-tag type-${product.type}">${product.type}</span>
-                ${product.recommended ? '<span class="recommended-tag">刺包優選</span>' : ''}
+                ${product.recommended ? '<span class="recommended-tag">刺寶優選</span>' : ''}
             </div>
             <span class="character-tag">${product.character}</span>
             <h3>${product.name}</h3>
