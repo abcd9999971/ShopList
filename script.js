@@ -13,14 +13,15 @@ async function loadProductsFromTSV() {
         products = lines.slice(1)
             .filter(line => line.trim()) // 過濾空行
             .map((line, index) => {
-                const [stallNumber, type, character, name, price] = line.split('\t');
+                const [stallNumber, type, character, name, price,pic] = line.split('\t');
                 return {
                     id: index + 1,
                     stallNumber: stallNumber.trim(),
                     type: type.trim(),
                     character: character.trim(),
                     name: name.trim(),
-                    price: parseInt(price.trim(), 10)
+                    price: parseInt(price.trim(), 10),
+                    pic: pic.trim()
                 };
             });
 
@@ -95,6 +96,7 @@ function renderProducts(productsToRender = products) {
         const div = document.createElement('div');
         div.className = 'product-card';
         div.innerHTML = `
+            <img src="${product.pic}" alt="${product.name}"class="product-image">
             <div>
                 <span class="stall-number">攤位 ${product.stallNumber}</span>
                 <span class="type-tag type-${product.type}">${product.type}</span>
