@@ -7,37 +7,51 @@
     <link href="styles.css" rel="stylesheet">
 </head>
 <body>
+    <!-- 主容器區域 -->
     <div class="container">
+        <!-- 篩選控制區域 -->
         <div class="controls">
+            <!-- 攤位篩選器群組 -->
             <div class="filter-group">
-                <label>攤位：</label>
-                <select id="stallFilter" onchange="filterProducts()">
-                    <option value="">全部攤位</option>
-                </select>
+                攤位： 全部攤位
             </div>
+
+            <!-- 商品類型篩選器群組 -->
             <div class="filter-group">
-                <label>類型：</label>
-                <select id="typeFilter" onchange="filterProducts()">
-                    <option value="">全部類型</option>
-                </select>
+                類型： 全部類型
             </div>
+
+            <!-- 角色/CP篩選器群組 -->
             <div class="filter-group">
-                <label>角色/CP：</label>
-                <select id="characterFilter" onchange="filterProducts()">
-                    <option value="">全部角色/CP</option>
-                </select>
+                角色/CP： 全部角色/CP
             </div>
+        <!-- 推薦商品篩選器群組 -->
+        <div class="filter-group">
+            刺包優選：全部
+        </div>
         </div>
 
+        <!-- 商品列表區域 -->
         <h2>商品列表</h2>
-        <div id="product-list" class="product-grid"></div>
+        <!-- 商品網格容器，用於動態載入商品卡片 -->
+        <div id="product-list" class="product-grid">
+        </div>
 
+        <!-- 購物車區域 -->
         <div class="cart">
             <h2>購買清單</h2>
-            <div id="cart-items"></div>
+            
+            <!-- 購物車項目容器，用於動態載入購物車內容 -->
+            <div id="cart-items">
+            </div>
+
+            <!-- 總計金額顯示區域 -->
             <div class="totals">
-                <p>已購買總額: <span>¥<span id="purchased-total">0</span></span></p>
-                <p>未購買總額: <span>¥<span id="unpurchased-total">0</span></span></p>
+                <!-- 已購買商品總額 -->
+                已購買總額: ¥<span id="purchased-total">0</span>
+                
+                <!-- 未購買商品總額 -->
+                未購買總額: ¥<span id="unpurchased-total">0</span>
             </div>
         </div>
     </div>

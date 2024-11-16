@@ -81,6 +81,24 @@ select {
     transform: scale(1.1);
 }
 
+/* 推薦商品卡片樣式 */
+.product-card.recommended {
+    background: #e3f2fd; /* 淺藍色背景 */
+    border: 2px solid #90caf9; /* 藍色邊框 */
+}
+
+/* 推薦標籤樣式 */
+.recommended-tag {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    background: #2196f3;
+    color: white;
+    margin-left: 8px;
+    font-weight: 500;
+}
+
 .product-image img {
     position: absolute;
     top: 0;

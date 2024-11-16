@@ -13,15 +13,17 @@ async function loadProductsFromTSV() {
         products = lines.slice(1)
             .filter(line => line.trim()) // 過濾空行
             .map((line, index) => {
-                const [stallNumber, type, character, name, price,pic] = line.split('\t');
+                // 根據新的TSV格式調整欄位映射
+                const [stallNumber, type, character, name, price, pic, recommended] = line.split('\t');
                 return {
                     id: index + 1,
-                    stallNumber: stallNumber.trim(),
-                    type: type.trim(),
-                    character: character.trim(),
-                    name: name.trim(),
+                    stallNumber: stallNumber.trim(), // 攤位號
+                    type: type.trim(),      // 情況
+                    character: character.trim(), // 角色/CP
+                    name: name.trim(),      // 內容
                     price: parseInt(price.trim(), 10),
-                    pic: pic.trim()
+                    pic: pic.trim(),
+                    recommended: recommended?.trim().toUpperCase() === 'TRUE' // 刺寶優選
                 };
             });
 
@@ -30,6 +32,7 @@ async function loadProductsFromTSV() {
         renderProducts();
     } catch (error) {
         console.error('Error loading TSV file:', error);
+        console.error('Error details:', error.message);
     }
 }
 
@@ -69,6 +72,14 @@ function updateFilters() {
         option.textContent = character;
         characterFilter.appendChild(option);
     });
+
+    // 更新推薦篩選器
+    const recommendedFilter = document.getElementById('recommendedFilter');
+    recommendedFilter.innerHTML = `
+        <option value="">全部</option>
+        <option value="true">刺包優選</option>
+        <option value="false">其餘</option>
+    `;
 }
 
 // 篩選商品
@@ -76,12 +87,17 @@ function filterProducts() {
     const selectedStall = document.getElementById('stallFilter').value;
     const selectedType = document.getElementById('typeFilter').value;
     const selectedCharacter = document.getElementById('characterFilter').value;
+    const selectedRecommended = document.getElementById('recommendedFilter').value;
 
     const filteredProducts = products.filter(product => {
         const stallMatch = !selectedStall || product.stallNumber === selectedStall;
         const typeMatch = !selectedType || product.type === selectedType;
         const characterMatch = !selectedCharacter || product.character === selectedCharacter;
-        return stallMatch && typeMatch && characterMatch;
+        // 處理推薦篩選
+        const recommendedMatch = !selectedRecommended || 
+            (selectedRecommended === 'TRUE' ? product.recommended : !product.recommended);
+        
+        return stallMatch && typeMatch && characterMatch && recommendedMatch;
     });
 
     renderProducts(filteredProducts);
@@ -94,12 +110,13 @@ function renderProducts(productsToRender = products) {
     
     productsToRender.forEach(product => {
         const div = document.createElement('div');
-        div.className = 'product-card';
+        div.className = `product-card ${product.recommended ? 'recommended' : ''}`;
         div.innerHTML = `
-            <img src="${product.pic}" alt="${product.name}"class="product-image">
+            <img src="${product.pic}" alt="${product.name}" class="product-image">
             <div>
-                <span class="stall-number">攤位 ${product.stallNumber}</span>
+                <span class="stall-number">${product.stallNumber}</span>
                 <span class="type-tag type-${product.type}">${product.type}</span>
+                ${product.recommended ? '<span class="recommended-tag">刺包優選</span>' : ''}
             </div>
             <span class="character-tag">${product.character}</span>
             <h3>${product.name}</h3>

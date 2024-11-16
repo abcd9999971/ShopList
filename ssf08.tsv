@@ -1,16 +1,19 @@
-攤位號	情況	角色/CP	內容	價格	圖片URL
-イ33	周邊	あさひ	小糸甜花あさひ貼紙	100	https://pbs.twimg.com/media/Gb8vWatawAAKczr?format=jpg&name=4096x4096
-ウ44	周邊	あさひ	あさひ貼紙	300	https://pbs.twimg.com/media/GboXRbObAAAWiw-?format=jpg&name=4096x4096
-オ09	既刊	透	委託既刊 透P本 透ちゃんは何か見つけたようです	500	https://pbs.twimg.com/media/GbiSmtDasAAkBjI?format=jpg&name=large
-オ39	新刊	透	真乃、甘奈、透本	500	https://pbs.twimg.com/media/Gb7sCVUaoAASRVb?format=jpg&name=4096x4096
-オ39	既刊	透	透既刊	500	https://pbs.twimg.com/media/Gb7sCVUaoAASRVb?format=jpg&name=4096x4096
-カ01	合本	透	透鴿合本	1000	https://pbs.twimg.com/media/GafX-aSaYAABgtR?format=jpg&name=4096x4096
-カ01	周邊	透	透鴿立牌	1500	https://pbs.twimg.com/media/GafX-aSaYAABgtR?format=jpg&name=4096x4096
-カ05	新刊	まどひな	まどひな本	500	https://pbs.twimg.com/media/Gb2WxbSbwAAm0SD?format=jpg&name=medium
-カ06	合本	ノクチル	相合学舎合本	800	https://pbs.twimg.com/media/GcCBpsbXgAAom-6?format=jpg&name=medium
-カ14	新刊	まどひな	まどひな短編集MHS	500	https://pbs.twimg.com/media/GcMcWxobMAAE8fe?format=jpg&name=4096x4096
-カ14	新刊	まどひな	まどひな本「円香先輩雛菜のこと好きすぎ～」	500	https://pbs.twimg.com/media/GcGiW9mbUAApzxe?format=jpg&name=medium
-カ20	新刊	円香	円香本	500	https://pbs.twimg.com/media/GcauhmWbUAAKKwU?format=jpg&name=4096x4096
-カ20	新刊	まどとお	まどとおコピ本	100	https://pbs.twimg.com/media/GcauhmWbUAAKKwU?format=jpg&name=4096x4096
-カ34	周邊	こいひな	こいひな秋デートアクスタ	1000	https://pbs.twimg.com/media/Gbcwjo9b0AAoFOD?format=jpg&name=large
-カ45	周邊	ノクチル	ノクチル立牌	500	https://pbs.twimg.com/media/GcBZvEMaMAIyhXp?format=jpg&name=large
+攤位號	情況	角色/CP	內容	價格	圖片URL	刺寶優選
+イ33	周邊	あさひ	小糸甜花あさひ貼紙	100	https://pbs.twimg.com/media/Gb8vWatawAAKczr?format=jpg&name=4096x4096	TRUE
+ウ44	周邊	あさひ	あさひ貼紙	300	https://pbs.twimg.com/media/GboXRbObAAAWiw-?format=jpg&name=4096x4096	TRUE
+オ09	既刊	透	委託既刊 透P本 透ちゃんは何か見つけたようです	500	https://pbs.twimg.com/media/GbiSmtDasAAkBjI?format=jpg&name=large	TRUE
+オ39	新刊	透	真乃、甘奈、透本	500	https://pbs.twimg.com/media/Gb7sCVUaoAASRVb?format=jpg&name=4096x4096	TRUE
+オ39	既刊	透	透既刊	500	https://pbs.twimg.com/media/Gb7sCVUaoAASRVb?format=jpg&name=4096x4096	TRUE
+カ01	合本	透	透鴿合本	1000	https://pbs.twimg.com/media/GafX-aSaYAABgtR?format=jpg&name=4096x4096	FALSE
+カ01	周邊	透	透鴿立牌	1500	https://pbs.twimg.com/media/GafX-aSaYAABgtR?format=jpg&name=4096x4096	FALSE
+カ05	新刊	まどひな	まどひな本	500	https://pbs.twimg.com/media/Gb2WxbSbwAAm0SD?format=jpg&name=medium	TRUE
+カ06	合本	ノクチル	相合学舎合本	800	https://pbs.twimg.com/media/GcCBpsbXgAAom-6?format=jpg&name=medium	TRUE
+カ14	新刊	まどひな	まどひな短編集MHS	500	https://pbs.twimg.com/media/GcMcWxobMAAE8fe?format=jpg&name=4096x4096	TRUE
+カ14	新刊	まどひな	まどひな本「円香先輩雛菜のこと好きすぎ～」	500	https://pbs.twimg.com/media/GcGiW9mbUAApzxe?format=jpg&name=medium	TRUE
+カ20	新刊	円香	円香本	500	https://pbs.twimg.com/media/GcauhmWbUAAKKwU?format=jpg&name=4096x4096	FALSE
+カ20	新刊	まどとお	まどとおコピ本	100	https://pbs.twimg.com/media/GcauhmWbUAAKKwU?format=jpg&name=4096x4096	TRUE
+カ34	周邊	こいひな	こいひな秋デートアクスタ	1000	https://pbs.twimg.com/media/Gbcwjo9b0AAoFOD?format=jpg&name=large	FALSE
+カ45	周邊	ノクチル	ノクチル立牌	500	https://pbs.twimg.com/media/GcBZvEMaMAIyhXp?format=jpg&name=large	TRUE
+カ25	周邊	まどとお	円透立牌	1500	https://pbs.twimg.com/media/GcgZySSaMAALJVC?format=jpg&name=4096x4096	TRUE
+カ25	新刊	まどとお	ノクチル合本	1000	https://pbs.twimg.com/media/GcgZySSaMAALJVC?format=jpg&name=4096x4096	TRUE
+カ18	新刊	まどとお	まどとおコピ本	100	https://pbs.twimg.com/media/GcfqhLGbsAAaUMx?format=jpg&name=large	TRUE
