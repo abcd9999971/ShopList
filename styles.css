@@ -78,11 +78,11 @@ select {
     transition: transform 0.3s ease;
 }
 
-/* 懸停效果 */
+/* 懸停效果 
 .product-image:hover {
-    transform: scale(2.0);
+    transform: scale(1.5);
 }
-
+#ToDo針對手機版改善*/
 /* 推薦商品卡片樣式 */
 .product-card.recommended {
     background: #e3f2fd; /* 淺藍色背景 */
@@ -273,7 +273,6 @@ input[type="checkbox"] {
     height: 40px; /* 增加高度 */
     margin-right: 10px;
 }
-
 
 /* 媒體查詢：手機螢幕 */
 @media screen and (max-width: 768px) {
