@@ -190,6 +190,22 @@ function removeFromCart(index) {
     renderCart();
 }
 
+// 在 script.js 中添加新函數
+function clearCart() {
+    // 顯示確認對話框
+    if (cart.length === 0) {
+        alert('購物清單已經是空的！');
+        return;
+    }
+    
+    if (confirm('確定要清空購物清單嗎？')) {
+        // 清空購物車陣列
+        cart.length = 0;
+        // 更新購物車顯示
+        renderCart();
+    }
+}
+
 // 渲染購物車
 function renderCart() {
     const cartItems = document.getElementById('cart-items');
@@ -197,6 +213,19 @@ function renderCart() {
     
     let purchasedTotal = 0;
     let unpurchasedTotal = 0;
+
+    // 添加清空購物車按鈕
+    const clearButton = document.createElement('button');
+    clearButton.textContent = '清空購物清單';
+    clearButton.onclick = clearCart;
+    clearButton.style.marginBottom = '20px';
+    clearButton.style.background = '#ff7675'; // 使用紅色背景
+    clearButton.style.width = 'auto';
+    clearButton.style.padding = '8px 16px';
+    clearButton.style.fontSize = '1em';
+    
+    // 將清空按鈕添加到購物車頂部
+    cartItems.appendChild(clearButton);
 
     cart.forEach((item, index) => {
         const div = document.createElement('div');
