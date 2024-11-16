@@ -28,6 +28,15 @@
             padding: 15px;
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         select {
@@ -35,7 +44,6 @@
             border-radius: 5px;
             border: 1px solid #ddd;
             font-size: 1em;
-            margin-left: 10px;
         }
 
         .product-grid {
@@ -51,6 +59,8 @@
             padding: 20px;
             transition: transform 0.2s;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
         }
 
         .product-card:hover {
@@ -68,6 +78,29 @@
             border-radius: 5px;
         }
 
+        .type-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            margin-left: 8px;
+        }
+
+        .type-新刊 { background: #ff7675; color: white; }
+        .type-既刊 { background: #74b9ff; color: white; }
+        .type-合本 { background: #55efc4; color: black; }
+        .type-周邊 { background: #ffeaa7; color: black; }
+
+        .character-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            background: #81ecec;
+            color: #2d3436;
+            margin: 5px 0;
+        }
+
         h2 {
             color: #2d3436;
             margin-bottom: 20px;
@@ -79,6 +112,7 @@
             margin: 10px 0;
             font-size: 1.1em;
             line-height: 1.4;
+            flex-grow: 1;
         }
 
         .price {
@@ -124,6 +158,12 @@
             border-bottom: none;
         }
 
+        .cart-item .type-tag,
+        .cart-item .character-tag {
+            font-size: 0.8em;
+            margin: 0 4px;
+        }
+
         .totals {
             margin-top: 20px;
             padding: 20px;
@@ -142,6 +182,7 @@
             background: #ff7675;
             padding: 5px 10px;
             margin-left: 10px;
+            width: auto;
         }
 
         .remove-btn:hover {
@@ -158,10 +199,24 @@
 <body>
     <div class="container">
         <div class="controls">
-            <label>選擇攤位：</label>
-            <select id="stallFilter" onchange="filterProducts()">
-                <option value="">全部攤位</option>
-            </select>
+            <div class="filter-group">
+                <label>攤位：</label>
+                <select id="stallFilter" onchange="filterProducts()">
+                    <option value="">全部攤位</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>類型：</label>
+                <select id="typeFilter" onchange="filterProducts()">
+                    <option value="">全部類型</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>角色/CP：</label>
+                <select id="characterFilter" onchange="filterProducts()">
+                    <option value="">全部角色/CP</option>
+                </select>
+            </div>
         </div>
 
         <h2>商品列表</h2>
@@ -176,119 +231,6 @@
             </div>
         </div>
     </div>
-
-    <script>
-        const products = [
-            { id: 1, stallNumber: 'カ20', name: '円香本', price: 500 },
-            { id: 2, stallNumber: 'カ20', name: 'まどとおコピ本', price: 100 },
-            { id: 3, stallNumber: 'カ06', name: '相合学舎合本', price: 800 },
-            { id: 4, stallNumber: 'カ14', name: 'まどひな短編集MHS', price: 500 },
-            { id: 5, stallNumber: 'カ14', name: 'まどひな本「円香先輩雛菜のこと好きすぎ～」', price: 500 },
-            { id: 6, stallNumber: 'オ09', name: '委託既刊 透P本 透ちゃんは何か見つけたようです', price: 500 },
-            { id: 7, stallNumber: 'カ05', name: 'まどひな本', price: 500 },
-            { id: 8, stallNumber: 'カ01', name: '透鴿合本', price: 1000 },
-            { id: 9, stallNumber: 'カ01', name: '透鴿立牌', price: 1500 },
-            { id: 10, stallNumber: 'ウ44', name: 'あさひ貼紙', price: 300 },
-            { id: 11, stallNumber: 'カ45', name: 'ノクチル立牌', price: 500 },
-            { id: 12, stallNumber: 'イ33', name: '小糸甜花あさひ貼紙', price: 100 },
-            { id: 13, stallNumber: 'カ34', name: 'こいひな秋デートアクスタ', price: 1000 },
-            { id: 14, stallNumber: 'オ39', name: '真乃、甘奈、透本', price: 500 },
-            { id: 15, stallNumber: 'オ39', name: '透既刊', price: 500 }
-        ];
-        
-        const cart = [];
-        const stallNumbers = new Set(products.map(p => p.stallNumber));
-
-        function updateStallFilter() {
-            const select = document.getElementById('stallFilter');
-            stallNumbers.forEach(stallNumber => {
-                const option = document.createElement('option');
-                option.value = stallNumber;
-                option.textContent = `攤位 ${stallNumber}`;
-                select.appendChild(option);
-            });
-        }
-
-        function filterProducts() {
-            const selectedStall = document.getElementById('stallFilter').value;
-            const filteredProducts = selectedStall 
-                ? products.filter(p => p.stallNumber === selectedStall)
-                : products;
-            renderProducts(filteredProducts);
-        }
-
-        function renderProducts(productsToRender = products) {
-            const productList = document.getElementById('product-list');
-            productList.innerHTML = '';
-            
-            productsToRender.forEach(product => {
-                const div = document.createElement('div');
-                div.className = 'product-card';
-                div.innerHTML = `
-                    <div class="stall-number">攤位 ${product.stallNumber}</div>
-                    <h3>${product.name}</h3>
-                    <p class="price">¥${product.price}</p>
-                    <button onclick="addToCart(${product.id}, '${product.stallNumber}', 
-                        '${product.name.replace("'", "\\'")}', ${product.price})">
-                        加入清單
-                    </button>
-                `;
-                productList.appendChild(div);
-            });
-        }
-
-        function addToCart(id, stallNumber, name, price) {
-            cart.push({ id, stallNumber, name, price, purchased: false });
-            renderCart();
-        }
-
-        function togglePurchased(index) {
-            cart[index].purchased = !cart[index].purchased;
-            renderCart();
-        }
-
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            renderCart();
-        }
-
-        function renderCart() {
-            const cartItems = document.getElementById('cart-items');
-            cartItems.innerHTML = '';
-            
-            let purchasedTotal = 0;
-            let unpurchasedTotal = 0;
-
-            cart.forEach((item, index) => {
-                const div = document.createElement('div');
-                div.className = 'cart-item';
-                div.innerHTML = `
-                    <div style="display: flex; align-items: center;">
-                        <input type="checkbox" 
-                            ${item.purchased ? 'checked' : ''} 
-                            onchange="togglePurchased(${index})">
-                        <span>
-                            <strong>${item.stallNumber}</strong> - ${item.name} - 
-                            <span class="price">¥${item.price}</span>
-                        </span>
-                    </div>
-                    <button class="remove-btn" onclick="removeFromCart(${index})">移除</button>
-                `;
-                cartItems.appendChild(div);
-
-                if (item.purchased) {
-                    purchasedTotal += item.price;
-                } else {
-                    unpurchasedTotal += item.price;
-                }
-            });
-
-            document.getElementById('purchased-total').textContent = purchasedTotal;
-            document.getElementById('unpurchased-total').textContent = unpurchasedTotal;
-        }
-
-        updateStallFilter();
-        renderProducts();
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
