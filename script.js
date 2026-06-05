@@ -1,80 +1,101 @@
 // 全局變數
 let products = [];
 const cart = [];
+const CART_STORAGE_KEY = 'shopListCart';
+const TSV_FILE = 'iipuro.tsv';
 
 // 從本地TSV檔案讀取資料
 async function loadProductsFromTSV() {
     try {
-        console.log('開始載入TSV文件...'); // 調試日誌
-        const response = await fetch('ssf08 - 1.tsv');
+        const response = await fetch(TSV_FILE);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
+
         const text = await response.text();
-        console.log('成功獲取TSV文件內容:', text.substring(0, 200) + '...'); // 顯示前200字符
+        products = parseProductsFromTSV(text);
 
-        const lines = text.split('\n');
-        console.log('總行數:', lines.length); // 調試日誌
-
-        // 跳過標題行，處理資料行
-        products = lines.slice(1)
-            .filter(line => {
-                const trimmed = line.trim();
-                if (!trimmed) {
-                    console.log('過濾掉空行');
-                    return false;
-                }
-                return true;
-            })
-            .map((line, index) => {
-                console.log('處理行:', line); // 調試日誌
-                const [stallNumber, type, character, name, price, pic, recommended] = line.split('\t');
-                const product = {
-                    id: index + 1,
-                    stallNumber: stallNumber.trim(),
-                    type: type.trim(),
-                    character: character.trim(),
-                    name: name.trim(),
-                    price: parseInt(price.trim(), 10),
-                    pic: pic.trim(),
-                    recommended: recommended?.trim().toUpperCase() === 'TRUE'
-                };
-                console.log('創建產品對象:', product); // 調試日誌
-                return product;
-            });
-
-        console.log('處理後的商品數量:', products.length); // 調試日誌
-        console.log('商品數據示例:', products[0]); // 調試日誌
-
-        // 更新網頁顯示
         updateFilters();
         renderProducts();
     } catch (error) {
         console.error('載入TSV文件時發生錯誤:', error);
-        console.error('錯誤詳情:', error.message);
+        alert('載入商品資料失敗，請確認 TSV 檔案存在且格式正確。');
+    }
+}
+
+function parseProductsFromTSV(text) {
+    const previousValues = [];
+
+    return text
+        .split(/\r?\n/)
+        .slice(1)
+        .filter(line => line.trim())
+        .map((line, index) => {
+            const fields = line.split('\t').map((field, fieldIndex) => {
+                const value = field.trim();
+                if (value === '同上') {
+                    return previousValues[fieldIndex] || '';
+                }
+
+                return value;
+            });
+
+            fields.forEach((field, fieldIndex) => {
+                previousValues[fieldIndex] = field;
+            });
+
+            const [stallNumber = '', type = '', character = '', name = '', price = '0', pic = '', recommended = ''] = fields;
+            const parsedPrice = parseInt(price.trim(), 10);
+
+            return {
+                id: index + 1,
+                stallNumber,
+                type,
+                character,
+                name,
+                price: Number.isNaN(parsedPrice) ? 0 : parsedPrice,
+                pic,
+                recommended: recommended.toUpperCase() === 'TRUE'
+            };
+        });
+}
+
+function saveCart() {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+}
+
+function loadCart() {
+    try {
+        const savedCart = localStorage.getItem(CART_STORAGE_KEY);
+        if (!savedCart) {
+            return;
+        }
+
+        const parsedCart = JSON.parse(savedCart);
+        if (Array.isArray(parsedCart)) {
+            cart.length = 0;
+            parsedCart.forEach(item => {
+                cart.push({
+                    id: item.id,
+                    stallNumber: item.stallNumber || '',
+                    name: item.name || '',
+                    price: Number(item.price) || 0,
+                    purchased: Boolean(item.purchased),
+                    pic: item.pic || ''
+                });
+            });
+        }
+    } catch (error) {
+        console.error('讀取購物清單保存資料時發生錯誤:', error);
+        localStorage.removeItem(CART_STORAGE_KEY);
     }
 }
 
 // 更新篩選器
 function updateFilters() {
-    // 重新獲取唯一值
-    const stallNumbers = new Set(products.map(p => p.stallNumber));
-    const types = new Set(products.map(p => p.type));
-    const characters = new Set(products.map(p => p.character));
+    const types = new Set(products.map(p => p.type).filter(Boolean));
+    const characters = new Set(products.map(p => p.character).filter(Boolean));
 
-    /*
-    // 更新攤位篩選器
-    const stallFilter = document.getElementById('stallFilter');
-    stallFilter.innerHTML = '<option value="">全部攤位</option>';
-    Array.from(stallNumbers).sort().forEach(stall => {
-        const option = document.createElement('option');
-        option.value = stall;
-        option.textContent = `攤位 ${stall}`;
-        stallFilter.appendChild(option);
-    });
-*/
-
-    // 更新類型篩選器
     const typeFilter = document.getElementById('typeFilter');
     typeFilter.innerHTML = '<option value="">全部類型</option>';
     Array.from(types).sort().forEach(type => {
@@ -84,7 +105,6 @@ function updateFilters() {
         typeFilter.appendChild(option);
     });
 
-    // 更新角色篩選器
     const characterFilter = document.getElementById('characterFilter');
     characterFilter.innerHTML = '<option value="">全部角色/CP</option>';
     Array.from(characters).sort().forEach(character => {
@@ -94,7 +114,6 @@ function updateFilters() {
         characterFilter.appendChild(option);
     });
 
-    // 更新推薦篩選器
     const recommendedFilter = document.getElementById('recommendedFilter');
     recommendedFilter.innerHTML = `
         <option value="">全部</option>
@@ -104,7 +123,6 @@ function updateFilters() {
 }
 
 // 篩選商品
-// 修改 filterProducts 函數
 function filterProducts() {
     const selectedType = document.getElementById('typeFilter').value;
     const selectedCharacter = document.getElementById('characterFilter').value;
@@ -113,9 +131,9 @@ function filterProducts() {
     const filteredProducts = products.filter(product => {
         const typeMatch = !selectedType || product.type === selectedType;
         const characterMatch = !selectedCharacter || product.character === selectedCharacter;
-        const recommendedMatch = !selectedRecommended || 
-            (selectedRecommended === 'true' ? product.recommended === true : product.recommended === false);
-        
+        const recommendedMatch = !selectedRecommended ||
+            (selectedRecommended === 'true' ? product.recommended : !product.recommended);
+
         return typeMatch && characterMatch && recommendedMatch;
     });
 
@@ -124,130 +142,250 @@ function filterProducts() {
 
 // 渲染商品列表
 function renderProducts(productsToRender = products) {
-    console.log('開始渲染商品列表'); // 調試日誌
-    console.log('要渲染的商品數量:', productsToRender.length); // 調試日誌
-
     const productList = document.getElementById('product-list');
     if (!productList) {
-        console.error('找不到product-list元素!');
+        console.error('找不到 product-list 元素');
         return;
     }
 
     productList.innerHTML = '';
-    
-    productsToRender.forEach((product, index) => {
-        console.log(`渲染第 ${index + 1} 個商品:`, product); // 調試日誌
 
+    productsToRender.forEach(product => {
         const div = document.createElement('div');
         div.className = `product-card ${product.recommended ? 'recommended' : ''}`;
-        div.innerHTML = `
-            <img src="${product.pic}" alt="${product.name}" class="product-image">
-            <div>
-                <span class="stall-number">${product.stallNumber}</span>
-                <span class="type-tag type-${product.type}">${product.type}</span>
-                ${product.recommended ? '<span class="recommended-tag">刺寶優選</span>' : ''}
-            </div>
-            <span class="character-tag">${product.character}</span>
-            <h3>${product.name}</h3>
-            <p class="price">¥${product.price}</p>
-            <button onclick="addToCart(${product.id}, '${product.stallNumber}', 
-                '${product.type}', '${product.character}',
-                '${product.name.replace("'", "\\'")}', ${product.price})">
-                加入清單
-            </button>
-        `;
-        productList.appendChild(div);
-        console.log(`商品 ${index + 1} 渲染完成`); // 調試日誌
-    });
 
-    console.log('商品列表渲染完成'); // 調試日誌
+        const image = document.createElement('img');
+        image.src = product.pic;
+        image.alt = product.name;
+        image.className = 'product-image';
+        div.appendChild(image);
+
+        const meta = document.createElement('div');
+
+        const stall = document.createElement('span');
+        stall.className = 'stall-number';
+        stall.textContent = product.stallNumber;
+        meta.appendChild(stall);
+
+        const type = document.createElement('span');
+        type.className = `type-tag type-${product.type}`;
+        type.textContent = product.type;
+        meta.appendChild(type);
+
+        if (product.recommended) {
+            const recommended = document.createElement('span');
+            recommended.className = 'recommended-tag';
+            recommended.textContent = '刺寶優選';
+            meta.appendChild(recommended);
+        }
+
+        div.appendChild(meta);
+
+        const character = document.createElement('span');
+        character.className = 'character-tag';
+        character.textContent = product.character;
+        div.appendChild(character);
+
+        const title = document.createElement('h3');
+        title.textContent = product.name;
+        div.appendChild(title);
+
+        const price = document.createElement('p');
+        price.className = 'price';
+        price.textContent = `¥${product.price}`;
+        div.appendChild(price);
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = '加入清單';
+        button.addEventListener('click', () => addToCart(product.id));
+        div.appendChild(button);
+
+        productList.appendChild(div);
+    });
 }
 
 // 添加到購物車
-function addToCart(id, stallNumber, type, character, name, price) {
-    // 從products數組中找到對應的商品以獲取圖片URL
+function addToCart(id) {
     const product = products.find(p => p.id === id);
-    cart.push({ 
-        id, 
-        stallNumber, 
-        name, 
-        price, 
+    if (!product) {
+        return;
+    }
+
+    cart.push({
+        id: product.id,
+        stallNumber: product.stallNumber,
+        name: product.name,
+        price: product.price,
         purchased: false,
-        pic: product.pic // 添加圖片URL
+        pic: product.pic
     });
+
+    saveCart();
     renderCart();
 }
 
 // 切換購買狀態
 function togglePurchased(index) {
+    if (!cart[index]) {
+        return;
+    }
+
     cart[index].purchased = !cart[index].purchased;
+    saveCart();
     renderCart();
 }
 
 // 從購物車移除
 function removeFromCart(index) {
     cart.splice(index, 1);
+    saveCart();
     renderCart();
 }
 
-// 在 script.js 中添加新函數
 function clearCart() {
-    // 顯示確認對話框
     if (cart.length === 0) {
         alert('購物清單已經是空的！');
         return;
     }
-    
+
     if (confirm('確定要清空購物清單嗎？')) {
-        // 清空購物車陣列
         cart.length = 0;
-        // 更新購物車顯示
+        saveCart();
         renderCart();
     }
+}
+
+function buildCartSummary() {
+    const purchasedTotal = cart
+        .filter(item => item.purchased)
+        .reduce((total, item) => total + item.price, 0);
+    const unpurchasedTotal = cart
+        .filter(item => !item.purchased)
+        .reduce((total, item) => total + item.price, 0);
+
+    const lines = [
+        '購買清單',
+        '',
+        ...cart.map(item => {
+            const status = item.purchased ? '已購買' : '未購買';
+            return `[${status}] ${item.stallNumber} ${item.name} ¥${item.price}`;
+        }),
+        '',
+        `已購買總額: ¥${purchasedTotal}`,
+        `未購買總額: ¥${unpurchasedTotal}`
+    ];
+
+    return lines.join('\n');
+}
+
+function downloadCart() {
+    if (cart.length === 0) {
+        alert('購物清單是空的，還沒有可以下載的內容。');
+        return;
+    }
+
+    const blob = new Blob([buildCartSummary()], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    const date = new Date().toISOString().slice(0, 10);
+
+    link.href = url;
+    link.download = `shop-list-${date}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
 }
 
 // 渲染購物車
 function renderCart() {
     const cartItems = document.getElementById('cart-items');
     cartItems.innerHTML = '';
-    
+
     let purchasedTotal = 0;
     let unpurchasedTotal = 0;
 
-    // 添加清空購物車按鈕
+    const actions = document.createElement('div');
+    actions.style.display = 'flex';
+    actions.style.gap = '10px';
+    actions.style.flexWrap = 'wrap';
+    actions.style.marginBottom = '20px';
+
     const clearButton = document.createElement('button');
+    clearButton.type = 'button';
     clearButton.textContent = '清空購物清單';
     clearButton.onclick = clearCart;
-    clearButton.style.marginBottom = '20px';
-    clearButton.style.background = '#ff7675'; // 使用紅色背景
+    clearButton.style.background = '#ff7675';
     clearButton.style.width = 'auto';
     clearButton.style.padding = '8px 16px';
     clearButton.style.fontSize = '1em';
-    
-    // 將清空按鈕添加到購物車頂部
-    cartItems.appendChild(clearButton);
+    actions.appendChild(clearButton);
+
+    const downloadButton = document.createElement('button');
+    downloadButton.type = 'button';
+    downloadButton.textContent = '下載購買清單';
+    downloadButton.onclick = downloadCart;
+    downloadButton.style.width = 'auto';
+    downloadButton.style.padding = '8px 16px';
+    downloadButton.style.fontSize = '1em';
+    actions.appendChild(downloadButton);
+
+    cartItems.appendChild(actions);
 
     cart.forEach((item, index) => {
         const div = document.createElement('div');
         div.className = 'cart-item';
-        div.innerHTML = `
-            <div style="display: flex; align-items: center;">
-                <input type="checkbox" 
-                    ${item.purchased ? 'checked' : ''} 
-                    onchange="togglePurchased(${index})">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <img src="${item.pic}" class="cart-item-image" alt="${item.name}">
-                    <span>
-                        <strong class="stall-number">${item.stallNumber}</strong>
-                        ${item.name}
-                    </span>
-                </div>
-            </div>
-            <div style="display: flex; align-items: center;">
-                <span class="price">¥${item.price}</span>
-                <button class="remove-btn" onclick="removeFromCart(${index})">移除</button>
-            </div>
-        `;
+
+        const left = document.createElement('div');
+        left.style.display = 'flex';
+        left.style.alignItems = 'center';
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = item.purchased;
+        checkbox.addEventListener('change', () => togglePurchased(index));
+        left.appendChild(checkbox);
+
+        const info = document.createElement('div');
+        info.style.display = 'flex';
+        info.style.alignItems = 'center';
+        info.style.gap = '8px';
+
+        const image = document.createElement('img');
+        image.src = item.pic;
+        image.alt = item.name;
+        image.className = 'cart-item-image';
+        info.appendChild(image);
+
+        const name = document.createElement('span');
+        const stall = document.createElement('strong');
+        stall.className = 'stall-number';
+        stall.textContent = item.stallNumber;
+        name.appendChild(stall);
+        name.appendChild(document.createTextNode(item.name));
+        info.appendChild(name);
+
+        left.appendChild(info);
+        div.appendChild(left);
+
+        const right = document.createElement('div');
+        right.style.display = 'flex';
+        right.style.alignItems = 'center';
+
+        const price = document.createElement('span');
+        price.className = 'price';
+        price.textContent = `¥${item.price}`;
+        right.appendChild(price);
+
+        const removeButton = document.createElement('button');
+        removeButton.type = 'button';
+        removeButton.className = 'remove-btn';
+        removeButton.textContent = '移除';
+        removeButton.addEventListener('click', () => removeFromCart(index));
+        right.appendChild(removeButton);
+
+        div.appendChild(right);
         cartItems.appendChild(div);
 
         if (item.purchased) {
@@ -261,20 +399,15 @@ function renderCart() {
     document.getElementById('unpurchased-total').textContent = unpurchasedTotal;
 }
 
-// 在 script.js 中添加新函數
 function addAllRecommendedToCart() {
-    // 過濾出所有推薦商品
     const recommendedProducts = products.filter(product => product.recommended);
-    
-    // 檢查是否有推薦商品
+
     if (recommendedProducts.length === 0) {
         alert('目前沒有推薦商品！');
         return;
     }
-    
-    // 將每個推薦商品添加到購物車
+
     recommendedProducts.forEach(product => {
-        // 檢查商品是否已在購物車中
         const isInCart = cart.some(item => item.id === product.id);
         if (!isInCart) {
             cart.push({
@@ -287,35 +420,31 @@ function addAllRecommendedToCart() {
             });
         }
     });
-    
-    // 更新購物車顯示
+
+    saveCart();
     renderCart();
 }
-// 確保頁面載入時添加按鈕
-document.addEventListener('DOMContentLoaded', function() {
-    loadProductsFromTSV();
-    
-    // 找到控制區域
+
+function setupControls() {
     const controls = document.querySelector('.controls');
-    
-    // 創建新的過濾器組
     const filterGroup = document.createElement('div');
     filterGroup.className = 'filter-group';
-    
-    // 創建添加所有推薦按鈕
+
     const addAllButton = document.createElement('button');
+    addAllButton.type = 'button';
     addAllButton.textContent = '刺寶快樂鍵';
     addAllButton.onclick = addAllRecommendedToCart;
-    addAllButton.style.width = 'auto';  // 覆蓋原來的 100% 寬度
-    addAllButton.style.padding = '8px 16px';  // 調整按鈕內邊距
-    addAllButton.style.fontSize = '1em';  // 調整字體大小
-    
-    // 將按鈕添加到過濾器組
-    filterGroup.appendChild(addAllButton);
-    
-    // 將過濾器組添加到控制區域
-    controls.appendChild(filterGroup);
-});
+    addAllButton.style.width = 'auto';
+    addAllButton.style.padding = '8px 16px';
+    addAllButton.style.fontSize = '1em';
 
-// 頁面載入時初始化
-document.addEventListener('DOMContentLoaded', loadProductsFromTSV);
+    filterGroup.appendChild(addAllButton);
+    controls.appendChild(filterGroup);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadCart();
+    renderCart();
+    setupControls();
+    loadProductsFromTSV();
+});
