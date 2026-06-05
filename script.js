@@ -124,17 +124,25 @@ function updateFilters() {
 
 // 篩選商品
 function filterProducts() {
+    const searchText = document.getElementById('searchInput').value.trim().toLowerCase();
     const selectedType = document.getElementById('typeFilter').value;
     const selectedCharacter = document.getElementById('characterFilter').value;
     const selectedRecommended = document.getElementById('recommendedFilter').value;
 
     const filteredProducts = products.filter(product => {
+        const searchTarget = [
+            product.stallNumber,
+            product.type,
+            product.character,
+            product.name
+        ].join(' ').toLowerCase();
         const typeMatch = !selectedType || product.type === selectedType;
         const characterMatch = !selectedCharacter || product.character === selectedCharacter;
         const recommendedMatch = !selectedRecommended ||
             (selectedRecommended === 'true' ? product.recommended : !product.recommended);
+        const searchMatch = !searchText || searchTarget.includes(searchText);
 
-        return typeMatch && characterMatch && recommendedMatch;
+        return searchMatch && typeMatch && characterMatch && recommendedMatch;
     });
 
     renderProducts(filteredProducts);
@@ -149,16 +157,23 @@ function renderProducts(productsToRender = products) {
     }
 
     productList.innerHTML = '';
+    document.getElementById('product-count').textContent = `${productsToRender.length} 件`;
 
     productsToRender.forEach(product => {
         const div = document.createElement('div');
         div.className = `product-card ${product.recommended ? 'recommended' : ''}`;
 
-        const image = document.createElement('img');
-        image.src = product.pic;
-        image.alt = product.name;
-        image.className = 'product-image';
-        div.appendChild(image);
+        if (product.pic) {
+            const image = document.createElement('img');
+            image.src = product.pic;
+            image.alt = product.name;
+            image.className = 'product-image';
+            div.appendChild(image);
+        } else {
+            const imagePlaceholder = document.createElement('div');
+            imagePlaceholder.className = 'product-image product-image-empty';
+            div.appendChild(imagePlaceholder);
+        }
 
         const meta = document.createElement('div');
 
@@ -197,6 +212,7 @@ function renderProducts(productsToRender = products) {
 
         const button = document.createElement('button');
         button.type = 'button';
+        button.className = 'add-button';
         button.textContent = '加入清單';
         button.addEventListener('click', () => addToCart(product.id));
         div.appendChild(button);
@@ -307,28 +323,20 @@ function renderCart() {
     let unpurchasedTotal = 0;
 
     const actions = document.createElement('div');
-    actions.style.display = 'flex';
-    actions.style.gap = '10px';
-    actions.style.flexWrap = 'wrap';
-    actions.style.marginBottom = '20px';
+    actions.className = 'cart-actions';
 
     const clearButton = document.createElement('button');
     clearButton.type = 'button';
+    clearButton.className = 'secondary-button danger-button';
     clearButton.textContent = '清空購物清單';
     clearButton.onclick = clearCart;
-    clearButton.style.background = '#ff7675';
-    clearButton.style.width = 'auto';
-    clearButton.style.padding = '8px 16px';
-    clearButton.style.fontSize = '1em';
     actions.appendChild(clearButton);
 
     const downloadButton = document.createElement('button');
     downloadButton.type = 'button';
+    downloadButton.className = 'secondary-button';
     downloadButton.textContent = '下載購買清單';
     downloadButton.onclick = downloadCart;
-    downloadButton.style.width = 'auto';
-    downloadButton.style.padding = '8px 16px';
-    downloadButton.style.fontSize = '1em';
     actions.appendChild(downloadButton);
 
     cartItems.appendChild(actions);
@@ -338,8 +346,7 @@ function renderCart() {
         div.className = 'cart-item';
 
         const left = document.createElement('div');
-        left.style.display = 'flex';
-        left.style.alignItems = 'center';
+        left.className = 'cart-item-main';
 
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
@@ -348,15 +355,19 @@ function renderCart() {
         left.appendChild(checkbox);
 
         const info = document.createElement('div');
-        info.style.display = 'flex';
-        info.style.alignItems = 'center';
-        info.style.gap = '8px';
+        info.className = 'cart-item-info';
 
-        const image = document.createElement('img');
-        image.src = item.pic;
-        image.alt = item.name;
-        image.className = 'cart-item-image';
-        info.appendChild(image);
+        if (item.pic) {
+            const image = document.createElement('img');
+            image.src = item.pic;
+            image.alt = item.name;
+            image.className = 'cart-item-image';
+            info.appendChild(image);
+        } else {
+            const imagePlaceholder = document.createElement('div');
+            imagePlaceholder.className = 'cart-item-image cart-item-image-empty';
+            info.appendChild(imagePlaceholder);
+        }
 
         const name = document.createElement('span');
         const stall = document.createElement('strong');
@@ -370,8 +381,7 @@ function renderCart() {
         div.appendChild(left);
 
         const right = document.createElement('div');
-        right.style.display = 'flex';
-        right.style.alignItems = 'center';
+        right.className = 'cart-item-actions';
 
         const price = document.createElement('span');
         price.className = 'price';
@@ -432,11 +442,9 @@ function setupControls() {
 
     const addAllButton = document.createElement('button');
     addAllButton.type = 'button';
+    addAllButton.className = 'quick-action';
     addAllButton.textContent = '刺寶快樂鍵';
     addAllButton.onclick = addAllRecommendedToCart;
-    addAllButton.style.width = 'auto';
-    addAllButton.style.padding = '8px 16px';
-    addAllButton.style.fontSize = '1em';
 
     filterGroup.appendChild(addAllButton);
     controls.appendChild(filterGroup);
