@@ -1,341 +1,543 @@
-/* 基礎重置和通用樣式 */
 * {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    font-family: 'Noto Sans JP', sans-serif;
+}
+
+:root {
+    --bg: #f4f6f8;
+    --surface: #ffffff;
+    --surface-soft: #f8fafc;
+    --text: #1f2933;
+    --muted: #677489;
+    --border: #dbe2ea;
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --danger: #e5484d;
+    --danger-dark: #c92a2f;
+    --price: #c2410c;
+    --shadow: 0 8px 24px rgba(21, 31, 48, 0.08);
 }
 
 body {
-    background: #f5f7fa;
-    padding: 20px;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Noto Sans JP", "Noto Sans TC", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.5;
 }
 
-/* 容器相關 */
+button,
+select,
+input {
+    font: inherit;
+}
+
+button {
+    border: 0;
+    border-radius: 8px;
+    background: var(--primary);
+    color: white;
+    cursor: pointer;
+    font-weight: 700;
+    transition: background 0.18s ease, transform 0.18s ease;
+}
+
+button:hover {
+    background: var(--primary-dark);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
 .container {
-    max-width: 1200px;
+    width: min(1280px, 100%);
     margin: 0 auto;
+    padding: 24px;
 }
 
-/* 控制區域樣式 */
-.controls {
-    margin: 20px 0;
-    background: white;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.app-header {
     display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.app-header h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1;
+}
+
+.app-header p {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 1rem;
+}
+
+.controls {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: minmax(220px, 1.4fr) repeat(3, minmax(150px, 1fr)) auto;
+    gap: 12px;
+    align-items: end;
+    margin-bottom: 28px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: var(--shadow);
 }
 
 .filter-group {
     display: flex;
-    align-items: center;
-    gap: 10px;
+    min-width: 0;
+    flex-direction: column;
+    gap: 6px;
 }
 
+.filter-group label {
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+input[type="search"],
 select {
-    padding: 8px 12px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    font-size: 1em;
+    width: 100%;
+    min-height: 42px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    padding: 9px 11px;
+    outline: none;
 }
 
-/* 商品網格和卡片的響應式設計 */
+input[type="search"]:focus,
+select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+}
+
+.quick-action,
+.secondary-button {
+    width: auto;
+    min-height: 42px;
+    padding: 9px 14px;
+    white-space: nowrap;
+    font-size: 0.95rem;
+}
+
+.section-title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+h2 {
+    color: var(--text);
+    font-size: 1.5rem;
+}
+
+#product-count {
+    color: var(--muted);
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
 .product-grid {
     display: grid;
-    gap: 20px;
-    margin-top: 20px;
-    /* 固定三列布局 */
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
 }
 
-
 .product-card {
-    background: white;
-    border-radius: 10px;
-    padding: 20px;
-    transition: transform 0.2s;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     display: flex;
+    min-width: 0;
+    min-height: 100%;
     flex-direction: column;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    padding: 14px;
+    box-shadow: 0 3px 12px rgba(21, 31, 48, 0.06);
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
 }
 
 .product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    border-color: #b8c3d1;
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+}
+
+.product-card.recommended {
+    border-color: #f8b84e;
+    background: #fffaf0;
 }
 
 .product-image {
-    position: relative;
     width: 100%;
-    padding-top: 0%;        /* 調整高度比例 */
-    margin-bottom: 15px;
+    aspect-ratio: 4 / 3;
+    margin-bottom: 12px;
     border-radius: 8px;
-    overflow: hidden;
-    background: #f8f9fa;
-    transition: transform 0.3s ease;
-}
-
-/* 懸停效果 
-.product-image:hover {
-    transform: scale(1.5);
-}
-#ToDo針對手機版改善*/
-/* 推薦商品卡片樣式 */
-.product-card.recommended {
-    background: #e3f2fd; /* 淺藍色背景 */
-    border: 2px solid #90caf9; /* 藍色邊框 */
-}
-
-/* 推薦標籤樣式 */
-.recommended-tag {
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.9em;
-    background: #2196f3;
-    color: white;
-    margin-left: 8px;
-    font-weight: 500;
-}
-
-.product-image img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    background: var(--surface-soft);
     object-fit: contain;
-    object-position: center;
-    transition: transform 0.3s ease;
 }
 
-/* 標籤樣式 */
+.stall-number,
+.type-tag,
+.character-tag,
+.recommended-tag {
+    display: inline-flex;
+    max-width: 100%;
+    align-items: center;
+    min-height: 24px;
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
 .stall-number {
-    color: #6c5ce7;
-    font-weight: 500;
-    margin-bottom: 10px;
-    display: inline-block;
-    padding: 4px 8px;
-    background: #f0f0ff;
-    border-radius: 5px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+    background: #eef2ff;
+    color: #3730a3;
 }
 
 .type-tag {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.9em;
-    margin-left: 8px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+    background: #e2e8f0;
+    color: #334155;
 }
 
-.type-新刊 { background: #ff7675; color: white; }
-.type-既刊 { background: #74b9ff; color: white; }
-.type-合本 { background: #55efc4; color: black; }
-.type-周邊 { background: #ffeaa7; color: black; }
+.type-新刊 {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.type-既刊 {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.type-合本 {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.type-周邊 {
+    background: #fef3c7;
+    color: #92400e;
+}
 
 .character-tag {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.9em;
-    background: #81ecec;
-    color: #2d3436;
-    margin: 5px 0;
+    width: fit-content;
+    margin: 2px 0 8px;
+    background: #e0f2fe;
+    color: #075985;
 }
 
-/* 文字和標題樣式 */
-h2 {
-    color: #2d3436;
-    margin-bottom: 20px;
-    font-size: 1.8em;
+.recommended-tag {
+    margin-bottom: 6px;
+    background: #f59e0b;
+    color: #ffffff;
 }
 
 h3 {
-    color: #2d3436;
-    margin: 10px 0;
-    font-size: 1.1em;
-    line-height: 1.4;
-    flex-grow: 1;
+    flex: 1;
+    margin-bottom: 10px;
+    color: var(--text);
+    font-size: 1rem;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
 }
 
 .price {
-    color: #e17055;
-    font-size: 1.4em;
-    font-weight: 700;
-    margin: 15px 0;
+    color: var(--price);
+    font-size: 1.25rem;
+    font-weight: 800;
 }
 
-/* 按鈕樣式 */
-button {
+.add-button {
     width: 100%;
-    padding: 20px;
-    border: none;
-    border-radius: 5px;
-    background: #6c5ce7;
-    color: white;
-    font-weight: 600;
-    font-size : 2.0em;
-    cursor: pointer;
-    transition: background 0.2s;
+    min-height: 44px;
+    margin-top: 12px;
+    padding: 10px 12px;
+    font-size: 1rem;
 }
 
-button:hover {
-    background: #5f50e1;
-}
-
-/* 購物車樣式 */
 .cart {
-    margin-top: 40px;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-top: 32px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    padding: 18px;
+    box-shadow: var(--shadow);
+}
+
+.cart h2 {
+    margin-bottom: 14px;
+}
+
+.cart-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.secondary-button {
+    background: #475569;
+}
+
+.secondary-button:hover {
+    background: #334155;
+}
+
+.danger-button {
+    background: var(--danger);
+}
+
+.danger-button:hover,
+.remove-btn:hover {
+    background: var(--danger-dark);
 }
 
 .cart-item {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
     align-items: center;
-    padding: 15px;
-    border-bottom: 1px solid #eee;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
 }
 
 .cart-item:last-child {
-    border-bottom: none;
+    border-bottom: 0;
 }
 
-.cart-item .type-tag,
-.cart-item .recommended-tag {
-    font-size: 0.8em;
-    margin: 0 4px;
+.cart-item-main,
+.cart-item-info,
+.cart-item-actions {
+    display: flex;
+    min-width: 0;
+    align-items: center;
 }
 
+.cart-item-main {
+    gap: 10px;
+}
 
+.cart-item-info {
+    gap: 8px;
+}
 
-/* 購物車中的圖片樣式 */
+.cart-item-info span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
 .cart-item-image {
-    width: 50px;
-    height: 50px;
-    border-radius: 4px;
+    width: 52px;
+    height: 52px;
+    flex: 0 0 auto;
+    border-radius: 8px;
+    background: var(--surface-soft);
     object-fit: cover;
-    margin-right: 10px;
-}
-
-.cart-item .price {
-    margin-right: 20px;
-    color: #e17055;
-    font-weight: 700;
 }
 
 .cart-item .stall-number {
-    background: #f0f0ff;
-    padding: 4px 8px;
-    border-radius: 5px;
-    color: #6c5ce7;
-    margin-right: 8px;
-    font-size: 0.9em;
+    margin: 0 8px 0 0;
 }
 
-/* 總計區域樣式 */
-.totals {
-    margin-top: 20px;
-    padding: 20px;
-    background: #f8f9ff;
-    border-radius: 5px;
+.cart-item-actions {
+    justify-content: flex-end;
+    gap: 10px;
 }
 
-.totals p {
-    display: flex;
-    justify-content: space-between;
-    margin: 10px 0;
-    font-weight: 500;
+.cart-item .price {
+    margin: 0;
+    white-space: nowrap;
+    font-size: 1rem;
 }
 
-/* 移除按鈕 */
 .remove-btn {
-    background: #ff7675;
-    padding: 10px 20px;  /* 加大內邊距 */
-    margin-left: 10px;
     width: auto;
-    font-size: 1.5em;  /* 設定字體大小 */
+    min-height: 36px;
+    padding: 7px 12px;
+    background: var(--danger);
+    font-size: 0.9rem;
 }
 
-.remove-btn:hover {
-    background: #e66767;
-}
-
-/* 表單元素 */
 input[type="checkbox"] {
-    width: 40px;  /* 增加寬度 */
-    height: 40px; /* 增加高度 */
-    margin-right: 10px;
+    width: 28px;
+    height: 28px;
+    flex: 0 0 auto;
+    accent-color: var(--primary);
 }
 
-/* 媒體查詢：手機螢幕 */
-@media screen and (max-width: 768px) {
+.totals {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    margin-top: 14px;
+    border-radius: 8px;
+    background: var(--surface-soft);
+    padding: 14px;
+    color: var(--muted);
+    font-weight: 800;
+}
+
+.totals span {
+    color: var(--text);
+}
+
+@media screen and (max-width: 980px) {
+    .controls {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .search-group {
+        grid-column: 1 / -1;
+    }
+}
+
+@media screen and (max-width: 640px) {
+    body {
+        padding-bottom: 82px;
+    }
+
+    .container {
+        padding: 14px;
+    }
+
+    .app-header {
+        margin-bottom: 12px;
+    }
+
+    .app-header h1 {
+        font-size: 2rem;
+    }
+
+    .controls {
+        top: 0;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-right: -14px;
+        margin-bottom: 18px;
+        margin-left: -14px;
+        border-right: 0;
+        border-left: 0;
+        border-radius: 0;
+        padding: 10px 14px;
+    }
+
+    input[type="search"],
+    select,
+    .quick-action,
+    .secondary-button {
+        min-height: 40px;
+        font-size: 0.9rem;
+    }
+
+    .quick-action {
+        width: 100%;
+    }
+
     .product-grid {
-        /* 調整手機版的網格配置 */
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 10px;
     }
 
     .product-card {
-        padding: 10px; /* 減少卡片內邊距 */
+        padding: 10px;
     }
 
-    .product-card h3 {
-        font-size: 0.9em; /* 減小標題字體 */
-        margin: 5px 0;
+    .product-card:hover {
+        transform: none;
+    }
+
+    .product-image {
+        margin-bottom: 8px;
+    }
+
+    .stall-number,
+    .type-tag,
+    .character-tag,
+    .recommended-tag {
+        padding: 3px 6px;
+        font-size: 0.7rem;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+    }
+
+    h3 {
+        font-size: 0.9rem;
     }
 
     .price {
-        font-size: 1.1em; /* 調整價格字體 */
-        margin: 8px 0;
+        font-size: 1.05rem;
     }
 
-    .stall-number {
-        font-size: 0.8em; /* 調整攤位號字體 */
-        padding: 2px 4px;
-        margin-bottom: 5px;
+    .add-button {
+        min-height: 40px;
+        margin-top: 8px;
+        font-size: 0.9rem;
     }
 
-    .type-tag, .character-tag, .recommended-tag {
-        font-size: 0.75em; /* 調整標籤字體 */
-        padding: 2px 4px;
-        margin: 2px;
+    .cart {
+        margin-top: 24px;
+        padding: 14px;
     }
 
-    button {
-        padding: 8px; /* 調整按鈕大小 */
-        font-size: 0.9em;
-    }
-
-    /* 購物車樣式調整 */
     .cart-item {
-        padding: 10px;
-        font-size: 0.9em;
+        grid-template-columns: 1fr;
     }
 
-    .remove-btn {
-        padding: 5px 10px;
-        font-size: 0.8em;
+    .cart-item-actions {
+        justify-content: space-between;
+        padding-left: 38px;
     }
 
-    /* 控制區域調整 */
+    .cart-item-image {
+        width: 46px;
+        height: 46px;
+    }
+
+    .totals {
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 20;
+        justify-content: center;
+        margin: 0;
+        border-top: 1px solid var(--border);
+        border-radius: 0;
+        background: rgba(255, 255, 255, 0.97);
+        box-shadow: 0 -8px 24px rgba(21, 31, 48, 0.12);
+        padding: 12px 14px;
+        font-size: 0.92rem;
+    }
+}
+
+@media screen and (max-width: 380px) {
     .controls {
-        padding: 10px;
-        gap: 10px;
+        grid-template-columns: 1fr;
     }
 
-    .filter-group {
-        font-size: 0.9em;
-    }
-
-    select {
-        padding: 5px 8px;
-        font-size: 0.9em;
+    .product-grid {
+        grid-template-columns: 1fr;
     }
 }

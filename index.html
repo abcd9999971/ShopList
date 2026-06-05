@@ -8,7 +8,19 @@
 </head>
 <body>
     <div class="container">
+        <header class="app-header">
+            <div>
+                <h1>Shop List</h1>
+                <p>會場購買清單</p>
+            </div>
+        </header>
+
         <div class="controls">
+            <div class="filter-group search-group">
+                <label for="searchInput">搜尋</label>
+                <input id="searchInput" type="search" placeholder="攤位 / 角色 / 品名" oninput="filterProducts()">
+            </div>
+
             <!--
             <div class="filter-group">
                 攤位：
@@ -18,21 +30,21 @@
             </div>
             -->
             <div class="filter-group">
-                類型：
+                <label for="typeFilter">類型</label>
                 <select id="typeFilter" onchange="filterProducts()">
                     <option value="">全部類型</option>
                 </select>
             </div>
 
             <div class="filter-group">
-                角色/CP：
+                <label for="characterFilter">角色/CP</label>
                 <select id="characterFilter" onchange="filterProducts()">
                     <option value="">全部角色/CP</option>
                 </select>
             </div>
 
             <div class="filter-group">
-                刺寶優選：
+                <label for="recommendedFilter">刺寶優選</label>
                 <select id="recommendedFilter" onchange="filterProducts()">
                     <option value="">全部</option>
                     <option value="true">刺寶優選</option>
@@ -41,8 +53,13 @@
             </div>
         </div>
 
-        <h2>商品列表</h2>
-        <div id="product-list" class="product-grid"></div>
+        <section class="product-section">
+            <div class="section-title">
+                <h2>商品列表</h2>
+                <span id="product-count">0 件</span>
+            </div>
+            <div id="product-list" class="product-grid"></div>
+        </section>
 
         <div class="cart">
             <h2>購買清單</h2>
